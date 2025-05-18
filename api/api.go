@@ -9,7 +9,7 @@ type CoinBalanceParams struct{
   Username string 
 }
 
-type CoinBalanceResposne struct{
+type CoinBalanceResponse struct{
   // Code status
   Code int
 

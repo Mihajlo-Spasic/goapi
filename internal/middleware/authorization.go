@@ -1,44 +1,46 @@
 package middleware
 
 import (
-  "errors"
-  "net/http"
+	"errors"
+	"fmt"
+	"net/http"
 
-  "github.com/mihajlo-spasic/goapi/api"
-  "github.com/mihajlo-spasic/goapi/internal/tools"
-  log "github.com/sirupsen/logrus"
+	"github.com/mihajlo-spasic/goapi/api"
+	"github.com/mihajlo-spasic/goapi/internal/tools"
+	log "github.com/sirupsen/logrus"
 )
 
-var UnAuthorizedError = errors.New("Invalid username token")
+var UnAuthorizedError = errors.New(fmt.Sprintf("Invalid username or token."))
 
-func Authrorization(next http.Handler) http.Handler {
-  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-    var username string = r.URL.query().get("username")  
-    var token = r.Header.get("Authrorization")
-    var err error
+func Authorization(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {	
 
-    if username == "" || token = "" {
-      log.Error(UnAuthorizedError)
-      api.RequestErrorHandler(w, UnAuthorizedError)
-      return 
-    }
+		var username string = r.URL.Query().Get("username")
+		var token = r.Header.Get("Authorization")
+		var err error
 
-    var database *tools.DatabaseInterface
-    database, err = tools.NewDatabase()
-    if err != nil { 
-      api.InternalErrorHandler(w)
-      return
-    }
+		if username == "" {
+			api.RequestErrorHandler(w, UnAuthorizedError)
+			return
+		}
 
-    var loginDetails *tools.loginDetails
-    loginDetails = (*database).GetUserLoginDetails(username)
+		var database *tools.DatabaseInterface
+		database, err = tools.NewDatabase()
+		if err != nil {
+			api.InternalErrorHandler(w)
+			return
+		}
 
-    if (loginDetails == nil || (token != (*loginDetails).AuthToken)) {
-      log.Error(UnAuthorizedError)
-      api.RequestErrorHandler(w, UnAuthorizedError)
-      return 
-    }
+		var loginDetails *tools.LoginDetails
+		loginDetails = (*database).GetUserLoginDetails(username)
 
-    next.ServeHTTP(w ,r)
-  })
+		if (loginDetails == nil || (token != (*loginDetails).AuthToken)) {
+			log.Error(UnAuthorizedError)
+			api.RequestErrorHandler(w, UnAuthorizedError)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+
+	})
 }
