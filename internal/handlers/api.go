@@ -3,7 +3,7 @@ package handlers
 import (
   "github.com/go-chi/chi"
   chimiddle "github.com/go-chi/chi/middleware"
-  "gitgub.com/mihajlo-spasic/goapi/internal/middleware"
+  "github.com/mihajlo-spasic/goapi/internal/middleware"
 )
 
 
