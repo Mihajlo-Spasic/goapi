@@ -1,11 +1,11 @@
 package middleware
 
 import (
-  "erorrs"
+  "errors"
   "net/http"
 
   "github.com/mihajlo-spasic/goapi/api"
-  "github.com/mihajlo-spasic/goapi/internals/tools"
+  "github.com/mihajlo-spasic/goapi/internal/tools"
   log "github.com/sirupsen/logrus"
 )
 
